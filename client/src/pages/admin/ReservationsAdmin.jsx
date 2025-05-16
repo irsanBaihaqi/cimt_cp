@@ -1,4 +1,4 @@
-function Reservation() {
+function ReservationAdmin() {
   return (
     <div>
       <h1>Reservation</h1>
@@ -6,4 +6,4 @@ function Reservation() {
   );
 }
 
-export default Reservation;
+export default ReservationAdmin;
