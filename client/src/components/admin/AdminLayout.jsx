@@ -7,7 +7,7 @@ import NavbarAdmin from "./NavbarAdmin";
 function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div className="flex h-screen">
+    <div className="flex">
       <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}

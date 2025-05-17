@@ -1,4 +1,3 @@
-// client/src/components/admin/AdminSidebar.jsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -20,9 +19,9 @@ const AdminSideBar = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-primary text-black shadow-md transform transition-transform duration-300 ease-in-out ${
+        className={`fixed lg:sticky top-0 left-0 z-40 w-64 bg-primary text-black shadow-md h-screen flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 flex flex-col h-full`}
+        } lg:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
         <div className="p-6 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -39,7 +38,7 @@ const AdminSideBar = ({ isOpen, onClose }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-4 px-4 flex-1">
+        <nav className="mt-4 px-4 flex-1 overflow-y-auto">
           <ul className="space-y-1">
             <li>
               <Link
@@ -117,19 +116,21 @@ const AdminSideBar = ({ isOpen, onClose }) => {
         </nav>
 
         {/* Logout Button */}
-        <Link
-          to="/admin/login"
-          className="flex items-center gap-3 py-3 px-6 mt-auto hover:bg-red text-red-600 hover:text-white transition-colors duration-200"
-        >
-          <img
-            src="/icons/logout.svg"
-            alt="Logout Icon"
-            width={20}
-            height={20}
-            className="text-red-600"
-          />
-          Logout
-        </Link>
+        <div className="mt-auto p-4">
+          <Link
+            to="/admin/login"
+            className="flex items-center gap-3 py-3 px-6 hover:bg-red text-red-600 hover:text-white transition-colors duration-200 rounded-lg"
+          >
+            <img
+              src="/icons/logout.svg"
+              alt="Logout Icon"
+              width={20}
+              height={20}
+              className="text-red-600"
+            />
+            Logout
+          </Link>
+        </div>
       </aside>
     </>
   );
