@@ -2,11 +2,10 @@
 
 const fs = require('fs');
 const path = require('path');
-const moment = require('moment'); // Jika belum install, jalankan: npm install moment
+const moment = require('moment');
 
 const logFilePath = path.join(__dirname, '../logs', 'server.log');
 
-// Buat folder logs jika belum ada
 if (!fs.existsSync(path.join(__dirname, '../logs'))) {
   fs.mkdirSync(path.join(__dirname, '../logs'));
 }
@@ -22,7 +21,6 @@ const logRequest = (req, res, next) => {
 
   // Log ke console juga
   console.log(`[${timestamp}] ${method} ${url}`);
-
   next();
 };
 

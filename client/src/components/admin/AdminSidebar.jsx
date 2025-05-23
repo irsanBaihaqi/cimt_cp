@@ -112,6 +112,18 @@ const AdminSideBar = ({ isOpen, onClose }) => {
                 Notification
               </Link>
             </li>
+            <li>
+              <Link
+                to="/admin/content-management"
+                className={`block py-2 px-4 rounded-lg transition-colors duration-200 ${
+                  isActive("/admin/content-management")
+                    ? "bg-accent text-primary"
+                    : "hover:bg-gray-300"
+                }`}
+              >
+                Content Management
+              </Link>
+            </li>
           </ul>
         </nav>
 

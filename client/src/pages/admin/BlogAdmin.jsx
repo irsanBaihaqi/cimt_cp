@@ -66,7 +66,7 @@ function BlogAdmin() {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold text-secondary">Kelola Blog</h1>

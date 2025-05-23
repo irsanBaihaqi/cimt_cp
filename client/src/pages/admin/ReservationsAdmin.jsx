@@ -50,7 +50,7 @@ function ReservationAdmin() {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       <div className="flex flex-col gap-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

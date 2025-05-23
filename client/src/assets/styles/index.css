@@ -74,29 +74,3 @@ body {
   line-height: 1.5;
   color: var(--black-color);
 }
-a {
-  text-decoration: none;
-}
-ul li{
-  list-style: none;
-}
-h1, h2, h3, p{
-  font-family: var(--font-poppins);
-  color: var(--black-color);
-}
-h1 {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-}
-h2 {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-}
-h3 {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
-}
-p, li{
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
-}
