@@ -1,12 +1,17 @@
-const Product = require("../models").Product;
+const Product = require("../models/Product");
 
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.findAll();
+        const products = await Product.findAll({
+            include: [{
+                model: Category,
+                as: 'category'
+            }]
+        });
         res.json(products);
     } catch (err) {
         res.status(500).json({
-            error: "Gagal mengambil daftar produk"
+            error: "Gagal ambil produk"
         });
     }
 };
@@ -55,7 +60,6 @@ exports.createProduct = async (req, res) => {
         });
     }
 };
-
 exports.updateProduct = async (req, res) => {
     const {
         name,
@@ -69,7 +73,8 @@ exports.updateProduct = async (req, res) => {
         category_id
     };
 
-    if (req.files?.image) {
+    // Cek apakah ada file baru diupload
+    if (req.files ?.image) {
         updates.image_url = `/images/products/${req.files.image[0].filename}`;
     }
 
@@ -97,7 +102,6 @@ exports.updateProduct = async (req, res) => {
         });
     }
 };
-
 exports.deleteProduct = async (req, res) => {
     try {
         const deleted = await Product.destroy({

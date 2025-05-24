@@ -5,11 +5,11 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         let folder = "";
         if (file.fieldname === "image") {
-            folder = path.join(__dirname, "../uploads/products");
+            folder = path.join(__dirname, "../../uploads/products");
         } else if (file.fieldname === "spec") {
-            folder = path.join(__dirname, "../uploads/specifications");
+            folder = path.join(__dirname, "../../uploads/specifications");
         } else {
-            folder = path.join(__dirname, "../uploads/temp");
+            folder = path.join(__dirname, "../../uploads/temp");
         }
         cb(null, folder);
     },
@@ -22,14 +22,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage
-}).fields([{
-        name: "image",
-        maxCount: 1
-    },
-    {
-        name: "spec",
-        maxCount: 1
-    }
-]);
+});
 
 module.exports = upload;

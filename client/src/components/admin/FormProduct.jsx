@@ -5,170 +5,127 @@ function FormProduct({ product, categories, onSave, onClose }) {
     name: product.name || "",
     description: product.description || "",
     category_id: product.category_id || "",
-    image: product.image || null,
-    spec_image: product.spec_image_url || "",
+    image: null,
+    spec: null,
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const { name, value, files } = e.target;
+
+    if (files) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files[0],
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files[0],
-    }));
-  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  const handleSubmit = async () => {
     const data = new FormData();
+    data.append("name", formData.name);
+    data.append("description", formData.description);
+    data.append("category_id", formData.category_id);
 
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        data.append(key, value);
-      }
-    });
-
-    if (formData.image instanceof File) {
+    if (formData.image) {
       data.append("image", formData.image);
     }
 
-    if (formData.spec_image instanceof File) {
-      data.append("spec", formData.spec_image);
+    if (formData.spec) {
+      data.append("spec", formData.spec);
     }
 
-    const url = product.id ? `/api/products/${product.id}` : "/api/products";
-    const method = product.id ? "PUT" : "POST";
-
-    try {
-      const response = await fetch(url, {
-        method,
-        body: data,
-      });
-
-      if (!response.ok) throw new Error("Gagal menyimpan produk");
-
-      const result = await response.json();
-      onSave(result);
-    } catch (err) {
-      console.error(err);
-      alert("Terjadi kesalahan saat menyimpan.");
-    }
+    onSave(data);
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 animate-fade-in">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full mx-4 animate-fade-in">
         <h2 className="text-xl font-semibold mb-4">
           {product.id ? "Edit" : "Tambah"} Produk
         </h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nama Produk
-            </label>
+            <label>Nama Produk</label>
             <input
+              type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              required
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Deskripsi
-            </label>
+            <label>Deskripsi</label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows="3"
-              required
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            ></textarea>
+              required
+            />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Kategori
-            </label>
+            <label>Kategori</label>
             <select
               name="category_id"
               value={formData.category_id}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
             >
-              {categories.map((cat, idx) => (
-                <option key={idx + 1} value={idx + 1}>
-                  {cat}
+              <option value="">Pilih Kategori</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gambar Produk
-            </label>
+            <label>Gambar Produk</label>
             <input
               type="file"
               name="image"
+              onChange={handleChange}
               accept="image/*"
-              onChange={handleFileChange}
-              className="w-full border border-gray-300 rounded-md"
+              className="w-full"
             />
-            {formData.image && typeof formData.image !== "object" && (
-              <img
-                src={formData.image}
-                alt="Preview"
-                className="mt-2 h-24 object-cover rounded-md"
-              />
-            )}
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Spesifikasi Gambar
-            </label>
+            <label>Spesifikasi (Gambar)</label>
             <input
               type="file"
               name="spec"
+              onChange={handleChange}
               accept="image/*"
-              onChange={handleFileChange}
-              className="w-full border border-gray-300 rounded-md"
+              className="w-full"
             />
-            {formData.spec_image && typeof formData.spec_image !== "object" && (
-              <img
-                src={formData.spec_image}
-                alt="Spesifikasi"
-                className="mt-2 h-24 object-cover rounded-md"
-              />
-            )}
           </div>
 
-          <div className="flex justify-end gap-3 mt-6">
+          <div className="mt-6 flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md"
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors duration-200"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200"
             >
               Simpan
             </button>
