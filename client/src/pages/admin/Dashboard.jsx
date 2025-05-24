@@ -169,8 +169,8 @@ export default Dashboard;
 function StatCard({ title, value, color }) {
   return (
     <div className={`rounded-lg p-4 ${color} text-white shadow-md`}>
-      <h2 className="text-xl font-bold">{value}</h2>
-      <p className="text-sm mt-1 opacity-80">{title}</p>
+      <h2 className="text-3xl font-regular">{value}</h2>
+      <p className="text-md mt-1 opacity-80">{title}</p>
     </div>
   );
 }

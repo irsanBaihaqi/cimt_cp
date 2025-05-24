@@ -8,18 +8,30 @@ function ProductsAdmin() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(["All"]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null);
+  const [currentProduct, setCurrentProduct] = useState({
+    name: "",
+    description: "",
+    category_id: "",
+    image_url: "",
+    spec_image_url: "",
+    created_at: "",
+  });
 
   // Muat produk dan kategori saat halaman dimuat
   useEffect(() => {
     productService
       .getAllProducts()
       .then((res) => {
-        setProducts(res.data);
+        setProducts(res.data || []);
+        setLoading(false);
       })
-      .catch(() => setProducts([]));
+      .catch((err) => {
+        console.error("Gagal ambil produk", err);
+        setLoading(false);
+      });
 
     categoryService
       .getAllCategories()
@@ -27,15 +39,19 @@ function ProductsAdmin() {
         const names = ["All", ...res.data.map((c) => c.name)];
         setCategories(names);
       })
-      .catch(() => setCategories(["All"]));
+      .catch((err) => {
+        console.error("Gagal ambil kategori", err);
+      });
   }, []);
 
+  // Filter produk berdasarkan pencarian dan kategori
   const filteredProducts = products
     .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter(
       (p) => activeCategory === "All" || p.category?.name === activeCategory
     );
 
+  // Buka modal tambah/edit produk
   const openAddModal = () => {
     setIsEditing(false);
     setCurrentProduct({
@@ -44,16 +60,18 @@ function ProductsAdmin() {
       category_id: "",
       image_url: "",
       spec_image_url: "",
+      created_at: new Date().toISOString(),
     });
     setShowModal(true);
   };
 
   const openEditModal = (product) => {
-    setCurrentProduct(product);
     setIsEditing(true);
+    setCurrentProduct(product);
     setShowModal(true);
   };
 
+  // Hapus produk
   const handleDelete = (id) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
       productService
@@ -62,21 +80,40 @@ function ProductsAdmin() {
           setProducts((prev) => prev.filter((p) => p.id !== id));
           alert("Produk berhasil dihapus.");
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error("Gagal hapus produk:", err);
           alert("Gagal menghapus produk.");
         });
     }
   };
 
-  const handleSave = (updatedProduct) => {
+  // Simpan produk baru atau edit
+  const handleSave = (formData) => {
     if (isEditing) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
-      );
+      productService
+        .updateProduct(currentProduct.id, formData)
+        .then((res) => {
+          setProducts((prev) =>
+            prev.map((p) => (p.id === res.data.id ? res.data : p))
+          );
+          setShowModal(false);
+        })
+        .catch((err) => {
+          console.error("Gagal perbarui produk:", err);
+          alert("Gagal memperbarui produk.");
+        });
     } else {
-      setProducts((prev) => [...prev, updatedProduct]);
+      productService
+        .createProduct(formData)
+        .then((res) => {
+          setProducts((prev) => [...prev, res.data]);
+          setShowModal(false);
+        })
+        .catch((err) => {
+          console.error("Gagal tambah produk:", err);
+          alert("Gagal menambahkan produk.");
+        });
     }
-    setShowModal(false);
   };
 
   return (
@@ -95,46 +132,40 @@ function ProductsAdmin() {
 
       {/* Tabs Kategori */}
       <div className="bg-primary shadow-sm rounded-lg p-4 mb-6 overflow-x-auto">
-        {categories.map((category) => (
+        {categories.map((cat) => (
           <button
-            key={category}
-            onClick={() => setActiveCategory(category)}
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
             className={`px-4 py-2 m-2 text-sm font-medium rounded-md whitespace-nowrap ${
-              activeCategory === category
+              activeCategory === cat
                 ? "bg-accent text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
-            {category}
+            {cat}
           </button>
         ))}
       </div>
 
       {/* Tabel Produk */}
-      <ProductTable
-        products={filteredProducts}
-        searchTerm={searchTerm}
-        activeCategory={activeCategory}
-        onEdit={openEditModal}
-        onDelete={handleDelete}
-      />
+      {!loading ? (
+        <ProductTable
+          products={filteredProducts}
+          searchTerm={searchTerm}
+          activeCategory={activeCategory}
+          onEdit={openEditModal}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <div className="text-center py-10">Memuat produk...</div>
+      )}
 
       {/* Modal Form */}
       {showModal && (
         <FormProduct
           product={currentProduct}
           categories={categories.filter((c) => c !== "All")}
-          onSave={(data) => {
-            if (isEditing) {
-              productService
-                .updateProduct(currentProduct.id, data)
-                .then((res) => handleSave(res.data));
-            } else {
-              productService
-                .createProduct(data)
-                .then((res) => handleSave(res.data));
-            }
-          }}
+          onSave={handleSave}
           onClose={() => setShowModal(false)}
         />
       )}

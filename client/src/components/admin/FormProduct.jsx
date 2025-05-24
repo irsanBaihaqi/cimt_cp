@@ -29,15 +29,17 @@ function FormProduct({ product, categories, onSave, onClose }) {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("name", formData.name);
-    data.append("description", formData.description);
-    data.append("category_id", formData.category_id);
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        data.append(key, value);
+      }
+    });
 
-    if (formData.image) {
+    if (formData.image instanceof File) {
       data.append("image", formData.image);
     }
 
-    if (formData.spec) {
+    if (formData.spec instanceof File) {
       data.append("spec", formData.spec);
     }
 
@@ -46,43 +48,48 @@ function FormProduct({ product, categories, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full mx-4 animate-fade-in">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg mx-4 animate-fade-in">
         <h2 className="text-xl font-semibold mb-4">
           {product.id ? "Edit" : "Tambah"} Produk
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label>Nama Produk</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Nama Produk
+            </label>
             <input
-              type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
               required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
 
           <div className="mb-4">
-            <label>Deskripsi</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Deskripsi
+            </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows="3"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
               required
-            />
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            ></textarea>
           </div>
 
           <div className="mb-4">
-            <label>Kategori</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Kategori
+            </label>
             <select
               name="category_id"
               value={formData.category_id}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
               required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
             >
               <option value="">Pilih Kategori</option>
               {categories.map((cat) => (
@@ -94,38 +101,56 @@ function FormProduct({ product, categories, onSave, onClose }) {
           </div>
 
           <div className="mb-4">
-            <label>Gambar Produk</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Gambar Produk
+            </label>
             <input
               type="file"
               name="image"
-              onChange={handleChange}
               accept="image/*"
-              className="w-full"
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md"
             />
+            {product.image_url && !formData.image && (
+              <img
+                src={product.image_url}
+                alt="Preview"
+                className="mt-2 h-24 object-cover rounded-md"
+              />
+            )}
           </div>
 
           <div className="mb-4">
-            <label>Spesifikasi (Gambar)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Spesifikasi Gambar
+            </label>
             <input
               type="file"
               name="spec"
-              onChange={handleChange}
               accept="image/*"
-              className="w-full"
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md"
             />
+            {product.spec_image_url && !formData.spec && (
+              <img
+                src={product.spec_image_url}
+                alt="Spesifikasi"
+                className="mt-2 h-24 object-cover rounded-md"
+              />
+            )}
           </div>
 
-          <div className="mt-6 flex justify-end gap-3">
+          <div className="flex justify-end gap-3 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors duration-200"
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200"
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md"
             >
               Simpan
             </button>
